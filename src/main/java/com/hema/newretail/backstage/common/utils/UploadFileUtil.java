@@ -33,6 +33,7 @@ public class UploadFileUtil<psvm> {
     private static final String IMAGE = "jpg, png，gif, jpeg";
 
     private static final int SIZE = 1024000;
+    private static final int SIZE1 = 204800;
 
     private static final String PROPORTION_IMAGE = "请上传正确比例图片";
 
@@ -40,6 +41,7 @@ public class UploadFileUtil<psvm> {
     private static final String DOMAIN_NAME_URL = "https://newretail.hemaapp.com/";
 
     private static final Logger logger = LoggerFactory.getLogger(CloudBohhApplication.class);
+
     /**
      * 上传图片到OSS
      */
@@ -69,6 +71,10 @@ public class UploadFileUtil<psvm> {
              *  middle_pic:2:1 type 2
              *  big_pic:3:1 type 3
              *  any_pic:任意比例
+             *
+             *  5:2 proportionType 5
+             *  4:7 proportionType 6
+             *
              */
             switch (proportionType) {
                 case 1:
@@ -81,7 +87,7 @@ public class UploadFileUtil<psvm> {
                     double d1 = 2.03;
                     double d2 = 2.04;
                     if (d1 <= doubleValue && doubleValue <= d2) {
-                        System.out.println("中图");
+                        System.out.println("2:1");
                     } else {
                         return PROPORTION_IMAGE;
                     }
@@ -90,7 +96,7 @@ public class UploadFileUtil<psvm> {
                     double d3 = 3.07;
                     double d4 = 3.08;
                     if (d3 <= doubleValue && doubleValue <= d4) {
-                        System.out.println("大图");
+                        System.out.println("3:1");
                     } else {
                         return PROPORTION_IMAGE;
                     }
@@ -98,12 +104,34 @@ public class UploadFileUtil<psvm> {
                 case 4:
                     System.out.println("任意大小图片");
                     break;
+                case 5:
+                    double p = 2.5D;
+                    if (p == doubleValue) {
+                        System.out.println("5:2");
+                    } else {
+                        return PROPORTION_IMAGE;
+                    }
+                    break;
+                case 6:
+                    double d5 = 0.57;
+                    double d6 = 0.58;
+                    if (d5 <= doubleValue && doubleValue <= d6) {
+                        System.out.println("4:7");
+                    } else {
+                        return PROPORTION_IMAGE;
+                    }
+                    break;
                 default:
             }
 
             String newFileName = String.valueOf(System.currentTimeMillis()) + "." + extensionName;
             int fileSize = (int) file.getSize();
             System.out.println(newFileName + "-->" + fileSize);
+            if (5 == proportionType || 6 == proportionType) {
+                if (fileSize > SIZE1) {
+                    return "文件大小不能超过2M";
+                }
+            }
             if (fileSize > SIZE) {
                 return "文件大小不能超过10M";
             }

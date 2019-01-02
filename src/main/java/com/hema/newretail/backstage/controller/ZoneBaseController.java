@@ -106,8 +106,11 @@ public class ZoneBaseController {
         }
         try {
             Long zoneId = zoneBaseService.insertZoneData(zoneName, machineTypeId, province, city, area, hashcodes);
+            if(-1L == zoneId) {
+                return Response.failure("检测到有交叉片区");
+            }
             // 发kafka
-            if (null != zoneId && zoneId > 0) {
+            if (zoneId > 0) {
                 taskKafkaHelper.addZoneHash(zoneId, hashcodes);
             }
             return Response.success();
