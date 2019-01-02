@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hema.newretail.backstage.dao.BaseMachineIndexBannerMapper" >
+  <resultMap id="BaseResultMap" type="com.hema.newretail.backstage.entry.BaseMachineIndexBannerEntry" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="info" property="info" jdbcType="VARCHAR" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+    <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP" />
+    <result column="gmt_start" property="gmtStart" jdbcType="TIMESTAMP" />
+    <result column="gmt_end" property="gmtEnd" jdbcType="TIMESTAMP" />
+    <result column="skip_url" property="skipUrl" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ListMap" type="com.hema.newretail.backstage.model.index.banner.BannerListBo" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="info" property="info" jdbcType="VARCHAR" />
+        <result column="picUrl" property="picUrl" jdbcType="VARCHAR" />
+        <result column="gmtStart" property="gmtStart" jdbcType="VARCHAR" />
+        <result column="gmtEnd" property="gmtEnd" jdbcType="VARCHAR" />
+        <result column="gmtCreate" property="gmtCreate" jdbcType="VARCHAR" />
+        <result column="skipUrl" property="skipUrl" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="VARCHAR" />
+  </resultMap>
+ <sql id="Base_Column_List" >
+    id, info, pic_url, gmt_create, gmt_modify, gmt_start, gmt_end, skip_url, type
+  </sql>
+    <!--list_sql-->
+    <select id="selectListMap" resultMap="ListMap">
+SELECT
+	*
+FROM
+	(
+		SELECT
+			b.id AS id,
+			b.info AS info,
+			b.pic_url AS picUrl,
+			date_format(b.gmt_start,'%Y-%m-%d') AS gmtStart,
+			date_format(b.gmt_end,'%Y-%m-%d') AS gmtEnd,
+			date_format(b.gmt_create,'%Y-%m-%d %H:%i:%S') AS gmtCreate,
+			b.skip_url AS skipUrl,
+			b.type AS type,
+			b.is_delete isdelete
+		FROM
+			base_machine_index_banner b
+		WHERE
+		    b.is_delete = 0
+		AND
+			NOW() BETWEEN b.gmt_start
+		AND b.gmt_end
+		ORDER BY
+			b.gmt_create DESC
+		LIMIT 999999
+	) AS t1
+UNION
+	SELECT
+		*
+	FROM
+		(
+			SELECT
+				b.id AS id,
+				b.info AS info,
+				b.pic_url AS picUrl,
+				date_format(b.gmt_start,'%Y-%m-%d') AS gmtStart,
+			    date_format(b.gmt_end,'%Y-%m-%d') AS gmtEnd,
+			    date_format(b.gmt_create,'%Y-%m-%d %H:%i:%S') AS gmtCreate,
+				b.skip_url AS skipUrl,
+				b.type AS type,
+				b.is_delete isdelete
+			FROM
+				base_machine_index_banner b
+			WHERE
+			    b.is_delete = 0
+		    AND
+				NOW() NOT BETWEEN b.gmt_start
+			AND b.gmt_end
+			ORDER BY
+				b.gmt_create DESC
+			LIMIT 999999
+		) t2
+    </select>
+  <!--delete_sql-->
+  <update id="delete" parameterType="java.lang.Long" >
+    update base_machine_index_banner set is_delete = 1 where id = #{id,jdbcType=BIGINT}
+  </update>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_machine_index_banner
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from base_machine_index_banner
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.hema.newretail.backstage.entry.BaseMachineIndexBannerEntry" >
+    insert into base_machine_index_banner (id, info, pic_url, 
+      gmt_create, gmt_modify, gmt_start, 
+      gmt_end, skip_url, type ,is_delete
+      )
+    values (#{id,jdbcType=BIGINT}, #{info,jdbcType=VARCHAR}, #{picUrl,jdbcType=VARCHAR}, 
+      #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{gmtStart,jdbcType=TIMESTAMP}, 
+      #{gmtEnd,jdbcType=TIMESTAMP}, #{skipUrl,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{isDelete,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hema.newretail.backstage.entry.BaseMachineIndexBannerEntry" >
+    insert into base_machine_index_banner
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="info != null" >
+        info,
+      </if>
+      <if test="picUrl != null" >
+        pic_url,
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create,
+      </if>
+      <if test="gmtModify != null" >
+        gmt_modify,
+      </if>
+      <if test="gmtStart != null" >
+        gmt_start,
+      </if>
+      <if test="gmtEnd != null" >
+        gmt_end,
+      </if>
+      <if test="skipUrl != null" >
+        skip_url,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="info != null" >
+        #{info,jdbcType=VARCHAR},
+      </if>
+      <if test="picUrl != null" >
+        #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null" >
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null" >
+        #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtStart != null" >
+        #{gmtStart,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtEnd != null" >
+        #{gmtEnd,jdbcType=TIMESTAMP},
+      </if>
+      <if test="skipUrl != null" >
+        #{skipUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hema.newretail.backstage.entry.BaseMachineIndexBannerEntry" >
+    update base_machine_index_banner
+    <set >
+      <if test="info != null" >
+        info = #{info,jdbcType=VARCHAR},
+      </if>
+      <if test="picUrl != null" >
+        pic_url = #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null" >
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtStart != null" >
+        gmt_start = #{gmtStart,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtEnd != null" >
+        gmt_end = #{gmtEnd,jdbcType=TIMESTAMP},
+      </if>
+      <if test="skipUrl != null" >
+        skip_url = #{skipUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hema.newretail.backstage.entry.BaseMachineIndexBannerEntry" >
+    update base_machine_index_banner
+    set info = #{info,jdbcType=VARCHAR},
+      pic_url = #{picUrl,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      gmt_start = #{gmtStart,jdbcType=TIMESTAMP},
+      gmt_end = #{gmtEnd,jdbcType=TIMESTAMP},
+      skip_url = #{skipUrl,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
